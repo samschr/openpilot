@@ -51,7 +51,7 @@ def custom_feedforward(v_ego, angle_steers, *args):  # helper function to easily
 
 
 def fit_ff_model(lr, plot=False):
-  CAR_MAKE = 'subaru'
+  CAR_MAKE = 'toyota'
   data = []
   steer_delay = None
   last_plan = None
@@ -296,6 +296,6 @@ def fit_ff_model(lr, plot=False):
 if __name__ == "__main__":
   # r = Route("14431dbeedbf3558%7C2020-11-10--22-24-34")
   # lr = MultiLogIterator(r.log_paths(), wraparound=False)
-  use_dir = '/openpilot/auto_feedforward/rlogs/michael/good'
+  use_dir = '/openpilot/auto_feedforward/rlogs/trae/good'
   lr = MultiLogIterator([os.path.join(use_dir, i) for i in os.listdir(use_dir)], wraparound=False)
   n = fit_ff_model(lr, plot="--plot" in sys.argv)
