@@ -38,9 +38,9 @@ def get_feedforward(v_ego, angle_steers, angle_offset=0):
   return steer_feedforward
 
 
-def _custom_feedforward(_X, _k_f):  # automatically determines all params after input _X
+def _custom_feedforward(_X, _k_f, _c1, _c2, _c3):  # automatically determines all params after input _X
   v_ego, angle_steers = _X.copy()
-  _c1, _c2, _c3 = 0.34365576041121065, 12.845373070976711, 51.63304088261174
+  # _c1, _c2, _c3 = 0.34365576041121065, 12.845373070976711, 51.63304088261174
   steer_feedforward = angle_steers * (_c1 * v_ego ** 2 + _c2 * v_ego + _c3)
   return steer_feedforward * _k_f
 
@@ -98,7 +98,7 @@ def fit_ff_model(lr, plot=False):
 
   print(f'{len(data)=}')
   data = [line for line in data if line['engaged']]  # remove disengaged
-  print(f'{len(data)=}')
+  print(f'{len(data)=} (engaged)')
 
   # Now split data by time
   split = [[]]
@@ -131,7 +131,7 @@ def fit_ff_model(lr, plot=False):
   # data = [line for line in data if abs(line['torque']) != 0]
   data = [line for line in data if abs(line['v_ego']) > 1 * CV.MPH_TO_MS]
   # data = [line for line in data if np.sign(line['angle_steers']) == np.sign(line['torque'])]
-  data = [line for line in data if abs(line['angle_steers'] - line['angle_steers_des']) < 0.5]  # todo: should angle_steers be offset by angle_offset anywhere?
+  data = [line for line in data if abs(line['angle_steers'] - line['angle_steers_des']) < 1.5]  # todo: should angle_steers be offset by angle_offset anywhere?
   print(max([i['torque'] for i in data]))
   print(min([i['torque'] for i in data]))
 
@@ -147,7 +147,7 @@ def fit_ff_model(lr, plot=False):
 
   # Data preprocessing
   for line in data:
-    line['angle_steers'] = abs(line['angle_steers'])
+    line['angle_steers'] = abs(line['angle_steers'] - line['angle_offset'])
     line['angle_steers_des'] = abs(line['angle_steers_des'])
     line['torque'] = abs(line['torque'])
 
